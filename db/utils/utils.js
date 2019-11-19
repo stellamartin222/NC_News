@@ -1,5 +1,37 @@
-exports.formatDates = list => {};
+exports.formatDates = list => {
+    const newList = [...list]
 
-exports.makeRefObj = list => {};
+    newList.forEach(item => {
+       const newDate = Date(item.created_at)
+       item.created_at = newDate   
+    });
+    return newList
+};
 
-exports.formatComments = (comments, articleRef) => {};
+exports.makeRefObj = list => {
+    const obj = {};
+
+    list.forEach(article => {
+        obj[article.title] = article.article_id
+    });
+
+    return obj
+};
+
+exports.formatComments = (comments, articleRef) => {
+    const formattedArr = [...comments];
+
+
+    formattedArr.forEach(comment => {
+        if(comment.created_by) {
+        comment.author = comment.created_by
+        delete comment.created_by
+        }
+        if (comment.belongs_to) {
+        comment.article_id = articleRef[comment.belongs_to]
+        delete comment.belongs_to
+        }
+    })  
+
+    return comments
+};
