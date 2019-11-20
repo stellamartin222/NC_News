@@ -98,22 +98,74 @@ describe('app', () => {
                     })
            });
        });
-    //    describe('GET', () => {
-    //     it('GET 200, gets an array of comments by the article id', () => {
-    //         return request(app)
-    //             .get('/api/articles/1/comments')
-    //             .expect(200)
-    //             .then(({body}) => {
-    //                 expect(body.comments).to.be.an('object')
-    //                 expect(body.comments).to.contain.key(
-    //                 'comment_id',
-    //                 'votes',
-    //                 'created_at',
-    //                 'author',
-    //                 'body')
-    //             })
-    //    });
-    //});
+       describe('GET', () => {
+            it('GET 200, gets an array of comments by the article id', () => {
+                return request(app)
+                    .get('/api/articles/1/comments')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.comments).to.be.an('array')
+                        expect(body.comments[0]).to.contain.key(
+                        'comment_id',
+                        'votes',
+                        'created_at',
+                        'author',
+                        'body')
+                        expect(body.comments[3].article_id).to.equal(1)
+                    })
+            });
+            it('GET 200, responds with an array of comments sorted by author', () => {
+                return request(app)
+                    .get('/api/articles/1/comments?sort_by=votes')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.comments).to.be.an('array')
+                        expect(body.comments[0]).to.contain.key(
+                        'comment_id',
+                        'votes',
+                        'created_at',
+                        'author',
+                        'body')
+                        expect(body.comments[0].votes).to.equal(100)
+                    });
+           
+            });
+            it('GET 200, ', () => {
+                return request(app)
+                    .get('/api/articles/1/comments?order=asc')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.comments).to.be.an('array')
+                        expect(body.comments[0]).to.contain.key(
+                        'comment_id',
+                        'votes',
+                        'created_at',
+                        'author',
+                        'body')
+                        expect(body.comments[0].votes).to.equal(0)
+                }); 
+            });
+       
+        });
+        describe.only('GET', () => {        
+            it('GET 200, returns an array of all articles', () => {
+                return request(app)
+                    .get('/api/articles')
+                    .expect(200)
+                    .then(({body}) => {
+                        expects(body.articles).to.be.an('array')
+                        expects(body.articles).to.contain.keys(
+                            "author", 
+                            "title",
+                            "article_id",
+                            "topic",
+                            "created_at",
+                            "votes",
+                            "comment_count"
+                        )
+                    })
+            });
+        });
     });
 
 
@@ -130,7 +182,7 @@ describe('app', () => {
                 })
         });
         describe('Articles', () => {
-            describe.only('GET', () => {
+            describe('GET', () => {
                 it('Error 404, not a valid rescource request', () => {
                     return request(app)
                         .get('/api/articles/500')
@@ -139,7 +191,7 @@ describe('app', () => {
                             expect(body.msg).to.equal('Resource does not exist')
                         })
                 })
-                it('Error 400, not a valid end point', () => {
+                it('Error 400, not a valid article ID', () => {
                     return request(app)
                         .get('/api/articles/banana')
                         .expect(400)
@@ -168,7 +220,7 @@ describe('app', () => {
                         })
                 });
             });
-            describe('POST', () => {
+            describe('POST comment', () => {
                 it('Error 400, missing information on body', () => {
                     return request(app)
                         .post('/api/articles/1/comments')
@@ -183,23 +235,19 @@ describe('app', () => {
                 });
                 it('Error 404, article id does not exist', () => {
                     return request(app)
-                        .get('/api/articles/1/comments')
+                        .post('/api/articles/1000/comments')
+                        .send({
+                        username: 'butter_bridge',
+                        body: "comment"})
                         .expect(404)
                         .then(({body}) => {
+                            console.log(body)
                             expect(body.msg).to.equal('Route not found')
                         })
                 });
-                // it('Error 404, not a valid article id', () => {
-                //     return request(app)
-                //         .get('/api/articles/beans/comments')
-                //         .expect(400)
-                //         .then(({body}) => {
-                //             expect(body.msg).to.equal('Bad request')
-                //         })
-                // });
                 it('Error 404, non existant username', () => {
                     return request(app)
-                    .get('/api/articles/1/comments')
+                    .post('/api/articles/1/comments')
                     .send({
                         username: 'alan',
                         body: "comment"
@@ -210,6 +258,32 @@ describe('app', () => {
                         expect(body.msg).to.equal('Route not found')
                     })
                 });
+            });
+            describe('GET comments', () => {
+                it('404, article id does not exist', () => {
+                    return request(app)
+                        .get('/api/articles/3000/comments')
+                        .expect(404)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Route not found')
+                    })
+                });
+                it('400, not a valid article id input', () => {
+                    return request(app)
+                        .get('/api/articles/cheese/comments')
+                        .expect(400)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                    })
+                });
+                // it('200, returns an empty array', () => {
+                //     return request(app)
+                //         .get('/api/articles/12/comments')
+                //         .expect(200)
+                //         .then(({body}) => {
+                //             expect(body.comments).to.equal([])
+                //     })
+                // });
             });
         });
         describe('Users', () => {
