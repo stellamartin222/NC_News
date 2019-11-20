@@ -80,6 +80,40 @@ describe('app', () => {
                     });
             });
         });
+       describe('POST', () => {
+           it('GET 201, creates a new comment and responds with the new article', () => {
+                return request(app)
+                    .post('/api/articles/1/comments')
+                    .send({
+                        username: 'butter_bridge',
+                        body : "new comment"
+                    })
+                    .expect(201)
+                    .then(({body}) => {
+                        expect(body.comment).to.be.an('object')
+                        expect(body.comment).to.contain({
+                            author: 'butter_bridge',
+                            body : "new comment"
+                        })
+                    })
+           });
+       });
+    //    describe('GET', () => {
+    //     it('GET 200, gets an array of comments by the article id', () => {
+    //         return request(app)
+    //             .get('/api/articles/1/comments')
+    //             .expect(200)
+    //             .then(({body}) => {
+    //                 expect(body.comments).to.be.an('object')
+    //                 expect(body.comments).to.contain.key(
+    //                 'comment_id',
+    //                 'votes',
+    //                 'created_at',
+    //                 'author',
+    //                 'body')
+    //             })
+    //    });
+    //});
     });
 
 
@@ -95,17 +129,108 @@ describe('app', () => {
                     expect(body.msg).to.equal('Route not found')
                 })
         });
-        it.only('Error 404, not a valid input to an endpoint', () => {
-            return request(app)
-                .get('/api/articles/500')
-                .expect(404)
-                .then(({body}) => {
-                    console.log(body)
-                    expect(body.msg).to.equal('Resource does not exist')
+        describe('Articles', () => {
+            describe.only('GET', () => {
+                it('Error 404, not a valid rescource request', () => {
+                    return request(app)
+                        .get('/api/articles/500')
+                        .expect(404)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Resource does not exist')
+                        })
                 })
-        })
-        // it('Error 400, ', () => {
+                it('Error 400, not a valid end point', () => {
+                    return request(app)
+                        .get('/api/articles/banana')
+                        .expect(400)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                })
+            });
+            describe('PATCH', () => {
+               it('Error 400, malformed body on empty input', () => {
+                    return request(app)
+                        .patch('/api/articles/1')
+                        .send({})
+                        .expect(400)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                });
+                it('Error 400, malformed body on invalid input', () => {
+                    return request(app)
+                        .patch('/api/articles/1')
+                        .send({inc_votes: 'banana'})
+                        .expect(400)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                });
+            });
+            describe('POST', () => {
+                it('Error 400, missing information on body', () => {
+                    return request(app)
+                        .post('/api/articles/1/comments')
+                        .send({
+                            body: "comment"
 
-        // })
+                        })
+                        .expect(400)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                });
+                it('Error 404, article id does not exist', () => {
+                    return request(app)
+                        .get('/api/articles/1/comments')
+                        .expect(404)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Route not found')
+                        })
+                });
+                // it('Error 404, not a valid article id', () => {
+                //     return request(app)
+                //         .get('/api/articles/beans/comments')
+                //         .expect(400)
+                //         .then(({body}) => {
+                //             expect(body.msg).to.equal('Bad request')
+                //         })
+                // });
+                it('Error 404, non existant username', () => {
+                    return request(app)
+                    .get('/api/articles/1/comments')
+                    .send({
+                        username: 'alan',
+                        body: "comment"
+
+                    })
+                    .expect(404)
+                    .then(({body}) => {
+                        expect(body.msg).to.equal('Route not found')
+                    })
+                });
+            });
+        });
+        describe('Users', () => {
+            describe('GET', () => {
+                it('Error 404, not a valid rescource request', () => {
+                    return request(app)
+                        .get('/api/users/500')
+                        .expect(404)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                })
+                it('Error 404, not a valid end point', () => {
+                    return request(app)
+                        .get('/api/users/banana')
+                        .expect(404)
+                        .then(({body}) => {
+                            expect(body.msg).to.equal('Bad request')
+                        })
+                })
+            });
+        });
     });
 });

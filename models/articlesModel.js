@@ -7,14 +7,7 @@ exports.fetchArticle = (article_id) => {
         .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
         .where('articles.article_id', article_id)
         .groupBy('articles.article_id')
-        .count('comments.comment_id as comment_count')  
-        .then((article) => {
-            if (article.length < 1) {
-                return Promise.reject({ errorCode : 404, msg : 'Resource does not exist'})
-            } else {
-                return article
-            }
-        })    
+        .count('comments.comment_id as comment_count')    
 };
 
 exports.updateArticle = (body) => {
@@ -23,3 +16,14 @@ exports.updateArticle = (body) => {
         .increment('votes', body.newVotes.inc_votes)
         .returning('*')
 };
+
+exports.createArticle = (body) => {
+    return connection
+        .insert(body)
+        .into('comments')
+        .returning('*')
+}
+
+exports.fetchCommentsByArticle = (body) => {
+    console.log('in the model')
+}

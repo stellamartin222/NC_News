@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const apiRouter = require('./routes/api.js')
+const {customErrors, psqlErrors, internalServerError} = require('./errorHander.js')
 
 
 app.use(express.json())
@@ -10,14 +11,8 @@ app.all('/*', (req, res, next) => {
     res.status(404).send({msg :'Route not found'})
 });
 
-app.use((err, ))
-
-app.use((err, req, res, next) => {
-    console.log(err)
-    if(err.code === '22P02'){
-        res.status(404).send({msg : 'Route does not exist'})
-    }
-})
-
+app.use(customErrors)
+app.use(psqlErrors)
+app.use(internalServerError)
 
 module.exports = app;
