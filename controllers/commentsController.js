@@ -1,12 +1,19 @@
-const {updateComment} = require('../models/commentsModel.js')
+const {updateComment, removeComment} = require('../models/commentsModel.js')
 
 exports.patchComment = (req, res, next) => {
-    const body = req.params
-    console.log(body)
-    console.log('controller')
-    updateComment(body)
+    const inc_votes = req.body
+    const comment_id = req.params
+    updateComment(inc_votes, comment_id)
     .then(comment => {
-        console.log('beans on toast');
-        res.status(202).send({'comment' : comment})
+        res.status(202).send({'comment' : comment[0]})
     }).catch(err => console.log(err))
+}
+
+exports.deleteComment = (req, res, next) => {
+    const body = req.params
+    removeComment(body)
+    .then(comment => {
+        res.sendStatus(204)
+    })
+    .catch(err => console.log(err))
 }

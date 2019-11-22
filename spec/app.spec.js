@@ -209,17 +209,34 @@ describe('app', () => {
     });
     describe('/api/comments', () => {
         describe('PATCH', () => {
-            it.only('GET 202, responds with updated comment', () => {
+            it('GET 202, responds with updated comment when votes is incremented', () => {
                 return request(app)
                     .patch('/api/comments/1')
                     .send({inc_votes: 1})
                     .expect(202)
                     .then(({body}) => {
-                        expect(body.comment).to.eql('object')
+                        expect(body.comment).to.be.an('object')
                         expect(body.comment.votes).to.equal(17)
                     })
             });
+            it('GET 202, responds with updated comment when votes is decremented', () => {
+                return request(app)    
+                    .patch('/api/comments/1')
+                    .send({inc_votes: -1})
+                    .expect(202)
+                    .then(({body}) => {
+                        expect(body.comment).to.be.an('object')
+                        expect(body.comment.votes).to.equal(15)
+                    })
+            })
         });
+        describe.only('DELETE', () => {
+            it('GET 204, responds with a no content message', () => {
+                return request(app)
+                    .delete('/api/comments/1')
+                    .expect(204)
+            });
+        })
     });
 
 
