@@ -3,7 +3,6 @@ exports.formatDates = list => {
 
     newList.forEach(item => {
        const newDate = new Date(item.created_at)
-       console.log(newDate)
        item.created_at = newDate   
     });
     return newList

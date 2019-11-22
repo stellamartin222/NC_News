@@ -66,7 +66,7 @@ exports.getArticles = (req, res, next) => {
         .then(articles => {
             //console.log(articles)
             res.status(200).send({'articles' : articles})
-    }).catch(err => console.log(err))
+    }).catch(next)
 }
 
 

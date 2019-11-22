@@ -230,7 +230,7 @@ describe('app', () => {
                     })
             })
         });
-        describe.only('DELETE', () => {
+        describe('DELETE', () => {
             it('GET 204, responds with a no content message', () => {
                 return request(app)
                     .delete('/api/comments/1')
@@ -312,7 +312,6 @@ describe('app', () => {
                         body: "comment"})
                         .expect(404)
                         .then(({body}) => {
-                            console.log(body)
                             expect(body.msg).to.equal('Route not found')
                         })
                 });
