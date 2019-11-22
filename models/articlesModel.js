@@ -18,13 +18,11 @@ const updateArticle = (body) => {
 };
 
 const createArticle = (body) => {
-    console.log(body)
     return connection
         .insert(body)
         .into('comments')
         .returning('*')
         .then(comments => {
-           console.log('this')
             if (body.article_id.length < 1){
                 return res.status(404).send({msg : 'Route not found'})
             }
@@ -46,10 +44,25 @@ const fetchCommentsByArticle = ({body, sortBy, orderBy}) => {
             })
 }
 
-const fetchArticles = ({body, sortBy, orderBy}) => {
-    console.log('in the model')
-    // return connection('articles')
-    //     .returning('*')
+const fetchArticles = (sortBy, orderBy, author, topic) => {
+    return connection('articles')
+    .select('articles.*')
+    .from('articles')
+    .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
+    .groupBy('articles.article_id')
+    .count('comments.comment_id as comment_count')
+    .orderBy(sortBy || 'created_at', orderBy || "desc")
+        .modify(query => {
+            if (author) {
+                query.where({'articles.author': author})
+            }
+            if (topic) {
+                query.where({'articles.topic': topic})
+            }
+        })
+        .then(articles => {
+            return articles
+        });
 }
 
 module.exports = {

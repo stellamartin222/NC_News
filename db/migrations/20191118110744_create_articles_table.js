@@ -11,7 +11,8 @@ exports.up = function(knex) {
        articlesTable.string('author')
           .references('users.username')
           .onDelete('SET NULL')
-      articlesTable.text('created_at').notNullable()
+      articlesTable.text('created_at')
+          //.defaultTo(knex.fn.now())
   })
 };
 

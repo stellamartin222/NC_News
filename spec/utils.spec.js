@@ -5,23 +5,23 @@ const {
   formatComments,
 } = require('../db/utils/utils');
 
-describe('formatDates', () => {
+describe.only('formatDates', () => {
   it('will return an array when given an array', () => {
     expect(formatDates([])).to.be.an('array')
   });
   it('will return one unix timestamp to js a object', ()=> {
     const result =[{created_at: 1511354163389}]
-    const expected = Date(1511354163389)
-    expect(formatDates(result)[0].created_at).to.equal(expected)
+    const expected = new Date(1511354163389)
+    expect(formatDates(result)[0].created_at).to.eql(expected)
   });
   it('will return a javascript timestamp for a large array of objects', () => {
     const result = [{created_at: 1511354163389}, {created_at: 1416140514171}, {created_at: 1289996514171}]
-    const expected1 = Date(1511354163389)
-    const expected2 = Date(1416140514171)
-    const expected3 = Date(1289996514171)
-    expect(formatDates(result)[0].created_at).to.equal(expected1)
-    expect(formatDates(result)[1].created_at).to.equal(expected2)
-    expect(formatDates(result)[2].created_at).to.equal(expected3)
+    const expected1 = new Date(1511354163389)
+    const expected2 = new Date(1416140514171)
+    const expected3 = new Date(1289996514171)
+    expect(formatDates(result)[0].created_at).to.eql(expected1)
+    expect(formatDates(result)[1].created_at).to.eql(expected2)
+    expect(formatDates(result)[2].created_at).to.eql(expected3)
   })
   it('does not mutate the original data', () => {
     const result = [{created_at: 1511354163389}]

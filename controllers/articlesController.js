@@ -57,17 +57,26 @@ exports.getCommentsByArticle = (req, res, next) => {
         }).catch(next)
 }
 
-exports.getArticles = (body) => {
-    // const body = req.params
-    // const sortBy = req.query.sort_by
-    // const orderBy = req.query.order
-    fetchArticles({body, sortBy, orderBy}) 
+exports.getArticles = (req, res, next) => {
+    const sortBy = req.query.sort_by
+    const orderBy = req.query.order
+    const author = req.query.author
+    const topic = req.query.topic
+    fetchArticles(sortBy, orderBy, author, topic) 
         .then(articles => {
-            console.log("articles")
-            // if(comments.length < 1){
-            //     res.status(404).send({msg : 'Route not found'})
-            // } else {
-            //     res.status(200).send({'comments' : comments})
-            // }
-        }).catch(next)
+            //console.log(articles)
+            res.status(200).send({'articles' : articles})
+    }).catch(err => console.log(err))
 }
+
+
+
+
+// const body = req.params
+// const sortBy = req.query.sort_by
+// const orderBy = req.query.order
+            // if(comments.length < 1){
+                //     res.status(404).send({msg : 'Route not found'})
+                // } else {
+                    //     res.status(200).send({'comments' : comments})
+                    // }

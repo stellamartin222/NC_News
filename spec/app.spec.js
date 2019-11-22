@@ -147,14 +147,14 @@ describe('app', () => {
             });
        
         });
-        describe.only('GET', () => {        
+        describe('GET', () => {        
             it('GET 200, returns an array of all articles', () => {
                 return request(app)
                     .get('/api/articles')
                     .expect(200)
                     .then(({body}) => {
-                        expects(body.articles).to.be.an('array')
-                        expects(body.articles).to.contain.keys(
+                        expect(body.articles).to.be.an('array')
+                        expect(body.articles[0]).to.contain.keys(
                             "author", 
                             "title",
                             "article_id",
@@ -163,6 +163,60 @@ describe('app', () => {
                             "votes",
                             "comment_count"
                         )
+                    })
+            });
+            it('GET 200, sorts the articles by a given column', () => {
+                return request(app)
+                    .get('/api/articles?sort_by=comment_count')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.articles[0].comment_count).to.equal('13')
+                    })
+            });
+            it('GET 200, will sort by created_at as a default', () => {
+                return request(app)
+                    .get('/api/articles')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.articles[0].created_at).to.equal('2018-11-15T12:21:54.171+00:00')
+                    })
+            });
+            it('GET 200, order can be specified as ascending', () => {
+                return request(app)
+                    .get('/api/articles?order=asc')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.articles[0].comment_count).to.equal('0')
+                    })
+            });
+            it('GET 200, can filter the articles by a given username', () => {
+                return request(app)
+                    .get('/api/articles?author=butter_bridge')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.articles[0].author).to.equal('butter_bridge')
+                    })
+            });
+            it('GET 200, can filter the articles by a given topic', () => {
+                return request(app)
+                    .get('/api/articles?topic=mitch')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.articles[0].topic).to.equal('mitch')
+                    });
+            });
+        });
+    });
+    describe('/api/comments', () => {
+        describe('PATCH', () => {
+            it.only('GET 202, responds with updated comment', () => {
+                return request(app)
+                    .patch('/api/comments/1')
+                    .send({inc_votes: 1})
+                    .expect(202)
+                    .then(({body}) => {
+                        expect(body.comment).to.eql('object')
+                        expect(body.comment.votes).to.equal(17)
                     })
             });
         });
