@@ -7,7 +7,7 @@ exports.up = function(knex) {
         .onDelete('SET NULL')
       commentsTable.integer('article_id')
         .references('articles.article_id')
-        .onDelete('SET NULL')
+        .onDelete('CASCADE')
       commentsTable.integer('votes')
       .defaultTo(0)
       commentsTable.text('created_at')

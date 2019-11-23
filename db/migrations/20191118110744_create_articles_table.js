@@ -5,6 +5,7 @@ exports.up = function(knex) {
        articlesTable.string('title').notNullable()
        articlesTable.text('body').notNullable()
        articlesTable.integer('votes')
+          .defaultTo(0)
        articlesTable.string('topic')
           .references('topics.slug')
           .onDelete('SET NULL')
@@ -12,7 +13,7 @@ exports.up = function(knex) {
           .references('users.username')
           .onDelete('SET NULL')
       articlesTable.text('created_at')
-          //.defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now())
   })
 };
 

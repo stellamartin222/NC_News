@@ -60,11 +60,11 @@ describe('app', () => {
             });
         });
         describe('PATCH', () => {
-            it('GET 202, reponds with updated article', () => {
+            it('GET 200, reponds with updated article', () => {
                 return request(app)
                     .patch('/api/articles/1')
                     .send({inc_votes: 2})
-                    .expect(202)
+                    .expect(200)
                     .then(({body}) => {
                         expect(body.article).to.be.an('object') 
                         expect(body.article.votes).to.equal(102)
@@ -98,7 +98,7 @@ describe('app', () => {
                     })
            });
        });
-       describe('GET', () => {
+       describe.only('GET', () => {
             it('GET 200, gets an array of comments by the article id', () => {
                 return request(app)
                     .get('/api/articles/1/comments')
@@ -142,7 +142,7 @@ describe('app', () => {
                         'created_at',
                         'author',
                         'body')
-                        expect(body.comments[0].votes).to.equal(0)
+                        expect(body.comments[0].created_at).to.equal('2000-11-26T12:36:03.389+00:00')
                 }); 
             });
        
@@ -209,21 +209,21 @@ describe('app', () => {
     });
     describe('/api/comments', () => {
         describe('PATCH', () => {
-            it('GET 202, responds with updated comment when votes is incremented', () => {
+            it('GET 200, responds with updated comment when votes is incremented', () => {
                 return request(app)
                     .patch('/api/comments/1')
                     .send({inc_votes: 1})
-                    .expect(202)
+                    .expect(200)
                     .then(({body}) => {
                         expect(body.comment).to.be.an('object')
                         expect(body.comment.votes).to.equal(17)
                     })
             });
-            it('GET 202, responds with updated comment when votes is decremented', () => {
+            it('GET 200, responds with updated comment when votes is decremented', () => {
                 return request(app)    
                     .patch('/api/comments/1')
                     .send({inc_votes: -1})
-                    .expect(202)
+                    .expect(200)
                     .then(({body}) => {
                         expect(body.comment).to.be.an('object')
                         expect(body.comment.votes).to.equal(15)
@@ -253,7 +253,7 @@ describe('app', () => {
                 })
         });
         describe('Articles', () => {
-            describe('GET', () => {
+            describe('GET article', () => {
                 it('Error 404, not a valid rescource request', () => {
                     return request(app)
                         .get('/api/articles/500')
@@ -275,7 +275,7 @@ describe('app', () => {
                it('Error 400, malformed body on empty input', () => {
                     return request(app)
                         .patch('/api/articles/1')
-                        .send({})
+                        .send({'egg': 'egg'})
                         .expect(400)
                         .then(({body}) => {
                             expect(body.msg).to.equal('Bad request')
@@ -290,6 +290,24 @@ describe('app', () => {
                             expect(body.msg).to.equal('Bad request')
                         })
                 });
+                it('will return 200 and an unedited article when given no send request', () => {
+                    return request(app)
+                        .patch('/api/articles/1')
+                        .expect(200)
+                        .then(({body}) => {
+                            expect(body.article).to.be.an('object') 
+                        expect(body.article.votes).to.equal(100)
+                        expect(body.article).to.contain.keys(
+                            'author', 
+                            'title',
+                            'article_id',
+                            'body',
+                            'topic',
+                            'created_at',
+                            'votes'
+                        );
+                        })
+                })
             });
             describe('POST comment', () => {
                 it('Error 400, missing information on body', () => {
@@ -329,7 +347,7 @@ describe('app', () => {
                     })
                 });
             });
-            describe('GET comments', () => {
+            describe.only('GET comments', () => {
                 it('404, article id does not exist', () => {
                     return request(app)
                         .get('/api/articles/3000/comments')
@@ -346,14 +364,32 @@ describe('app', () => {
                             expect(body.msg).to.equal('Bad request')
                     })
                 });
-                // it('200, returns an empty array', () => {
-                //     return request(app)
-                //         .get('/api/articles/12/comments')
-                //         .expect(200)
-                //         .then(({body}) => {
-                //             expect(body.comments).to.equal([])
-                //     })
-                // });
+                it('200, returns an empty array', () => {
+                    return request(app)
+                        .get('/api/articles/12/comments')
+                        .expect(200)
+                        .then(({body}) => {
+                            expect(body.comments).to.eql([])
+                    })
+                });
+            });
+            describe('GET articles', () => {
+                it('GET 404, topic not a topic', () => {
+                    return request(app)
+                        .get('/api/articles?topic=not_a_topic')
+                        .expect(404)
+                        .then(({body})=> {
+                            expect(body.msg).to.equal('Route not found')
+                        })
+                });
+                it('GET 404, author given not recognized', () => {
+                    return request(app)
+                        .get('/api/articles?author=not_an_author')
+                        .expect(404)
+                        .then(({body})=> {
+                            expect(body.msg).to.equal('Route not found')
+                        })
+                })
             });
         });
         describe('Users', () => {
@@ -373,6 +409,27 @@ describe('app', () => {
                         .then(({body}) => {
                             expect(body.msg).to.equal('Bad request')
                         })
+                })
+            });
+        });
+        describe('Comments', () => {
+            describe('PATCH', () => {
+                it('will return with 200 when sent a body with no inc votes', () => {
+                    return request(app)
+                    .patch('/api/comments/1')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.article).to.be.an('object') 
+                        expect(body.comment.votes).to.equal(16)
+                    })
+                });
+                it('will retrn with a 404 error when given an ivalid comment id', () => {
+                    return request(app)
+                    .patch('/api/comments/1000')
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.msg).to.equal('Route not found')
+                    })
                 })
             });
         });

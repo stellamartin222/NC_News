@@ -1,11 +1,9 @@
 exports.formatDates = list => {
-    const newList = [...list]
-
-    newList.forEach(item => {
-       const newDate = new Date(item.created_at)
-       item.created_at = newDate   
+    return list.map(item => {
+        const newItem = {...item}
+        newItem.created_at = new Date(newItem.created_at)
+        return newItem  
     });
-    return newList
 };
 
 exports.makeRefObj = list => {
@@ -20,18 +18,41 @@ exports.makeRefObj = list => {
 
 exports.formatComments = (comments, articleRef) => {
     const formattedArr = [...comments];
+    const newArr = formattedArr.map(comment => {
 
+        const newComment = {...comment}
+        newComment.created_at = new Date(comment.created_at)
 
-    formattedArr.forEach(comment => {
-        if(comment.created_by) {
-        comment.author = comment.created_by
-        delete comment.created_by
+        if(newComment.created_by) {
+            newComment.author = comment.created_by
+        delete newComment.created_by
         }
-        if (comment.belongs_to) {
-        comment.article_id = articleRef[comment.belongs_to]
-        delete comment.belongs_to
-        }
-    })  
 
-    return comments
+        if (newComment.belongs_to) {
+            newComment.article_id = articleRef[comment.belongs_to]
+        delete newComment.belongs_to
+        }
+        return newComment
+    })
+
+
+
+    // formattedArr.forEach(comment => {
+
+    //     const newComment = {...comment}
+
+
+    //     if(newComment.created_by) {
+    //         newComment.author = comment.created_by
+    //     delete newComment.created_by
+    //     }
+
+    //     if (newComment.belongs_to) {
+    //         newComment.article_id = articleRef[comment.belongs_to]
+    //     delete newComment.belongs_to
+    //     }
+
+    // })  
+
+    return newArr
 };

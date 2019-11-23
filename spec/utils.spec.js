@@ -5,7 +5,7 @@ const {
   formatComments,
 } = require('../db/utils/utils');
 
-describe.only('formatDates', () => {
+describe('formatDates', () => {
   it('will return an array when given an array', () => {
     expect(formatDates([])).to.be.an('array')
   });

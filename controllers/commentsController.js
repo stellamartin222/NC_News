@@ -5,7 +5,7 @@ exports.patchComment = (req, res, next) => {
     const comment_id = req.params
     updateComment(inc_votes, comment_id)
     .then(comment => {
-        res.status(202).send({'comment' : comment[0]})
+        res.status(200).send({'comment' : comment[0]})
     }).catch(next)
 }
 
