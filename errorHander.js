@@ -7,7 +7,6 @@ exports.customErrors = (err, req, res, next) => {
 }
 
 exports.psqlErrors = (err, req, res, next) => {
-    //console.log(err)
     const errorMessages = ['42703', '22003', '22P02']
     const invalidInput = ['23503']
     if (errorMessages.includes(err.code)) {

@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const request = require('supertest');
 const app = require('../app');
 const connection = require('../db/connection.js')
+const {existingArticle} = require('../db/utils/articleChecker.js')
 
 describe('app', () => {
     beforeEach(() => {
@@ -80,7 +81,7 @@ describe('app', () => {
                     });
             });
         });
-       describe('POST', () => {
+        describe('POST', () => {
            it('GET 201, creates a new comment and responds with the new article', () => {
                 return request(app)
                     .post('/api/articles/1/comments')
@@ -97,8 +98,8 @@ describe('app', () => {
                         })
                     })
            });
-       });
-       describe.only('GET', () => {
+        });
+        describe('GET', () => {
             it('GET 200, gets an array of comments by the article id', () => {
                 return request(app)
                     .get('/api/articles/1/comments')
@@ -240,7 +241,17 @@ describe('app', () => {
     });
 
 
-
+    // describe('existingArticle- article checker', () => {
+    //     it('will return a boolean value', () => {
+    //         const result = 1
+    //         expect(existingArticle(result)).to.be.an('boolean')
+    //     });
+    //     it('will return true when given a value that is an existing article', () => {
+    //         const expected = true
+    //         const result = 1
+    //         expect(existingArticle(result)).to.eql(expected)
+    //     })
+    // });
 
 
     describe('Error Handling', () => {
@@ -259,7 +270,7 @@ describe('app', () => {
                         .get('/api/articles/500')
                         .expect(404)
                         .then(({body}) => {
-                            expect(body.msg).to.equal('Resource does not exist')
+                            expect(body.msg).to.equal('Route not found')
                         })
                 })
                 it('Error 400, not a valid article ID', () => {
@@ -290,24 +301,24 @@ describe('app', () => {
                             expect(body.msg).to.equal('Bad request')
                         })
                 });
-                it('will return 200 and an unedited article when given no send request', () => {
-                    return request(app)
-                        .patch('/api/articles/1')
-                        .expect(200)
-                        .then(({body}) => {
-                            expect(body.article).to.be.an('object') 
-                        expect(body.article.votes).to.equal(100)
-                        expect(body.article).to.contain.keys(
-                            'author', 
-                            'title',
-                            'article_id',
-                            'body',
-                            'topic',
-                            'created_at',
-                            'votes'
-                        );
-                        })
-                })
+                // it('will return 200 and an unedited article when given no send request', () => {
+                //     return request(app)
+                //         .patch('/api/articles/1')
+                //         .expect(200)
+                //         .then(({body}) => {
+                //             expect(body.article).to.be.an('object') 
+                //         expect(body.article.votes).to.equal(100)
+                //         expect(body.article).to.contain.keys(
+                //             'author', 
+                //             'title',
+                //             'article_id',
+                //             'body',
+                //             'topic',
+                //             'created_at',
+                //             'votes'
+                //         );
+                //         })
+                // })
             });
             describe('POST comment', () => {
                 it('Error 400, missing information on body', () => {
@@ -347,7 +358,7 @@ describe('app', () => {
                     })
                 });
             });
-            describe.only('GET comments', () => {
+            describe('GET comments', () => {
                 it('404, article id does not exist', () => {
                     return request(app)
                         .get('/api/articles/3000/comments')
@@ -364,14 +375,14 @@ describe('app', () => {
                             expect(body.msg).to.equal('Bad request')
                     })
                 });
-                it('200, returns an empty array', () => {
-                    return request(app)
-                        .get('/api/articles/12/comments')
-                        .expect(200)
-                        .then(({body}) => {
-                            expect(body.comments).to.eql([])
-                    })
-                });
+                // it('200, returns an empty array', () => {
+                //     return request(app)
+                //         .get('/api/articles/12/comments')
+                //         .expect(200)
+                //         .then(({body}) => {
+                //             expect(body.comments).to.eql([])
+                //     })
+                // });
             });
             describe('GET articles', () => {
                 it('GET 404, topic not a topic', () => {
@@ -414,19 +425,29 @@ describe('app', () => {
         });
         describe('Comments', () => {
             describe('PATCH', () => {
-                it('will return with 200 when sent a body with no inc votes', () => {
-                    return request(app)
-                    .patch('/api/comments/1')
-                    .expect(200)
-                    .then(({body}) => {
-                        expect(body.article).to.be.an('object') 
-                        expect(body.comment.votes).to.equal(16)
-                    })
-                });
-                it('will retrn with a 404 error when given an ivalid comment id', () => {
+                // it('will return with 200 when sent a body with no inc votes', () => {
+                //     return request(app)
+                //     .patch('/api/comments/1')
+                //     .expect(200)
+                //     .then(({body}) => {
+                //         expect(body.comment).to.be.an('object') 
+                //         expect(body.comment.votes).to.equal(16)
+                //     })
+                // });
+                it('will retrn with a 404 error when given an invalid comment id', () => {
                     return request(app)
                     .patch('/api/comments/1000')
-                    .expect(200)
+                    .expect(404)
+                    .then(({body}) => {
+                        expect(body.msg).to.equal('Route not found')
+                    })
+                })
+            });
+            describe('DELETE', () => {
+                it('will return with a 404 error when given an invalid comment id', () => {
+                    return request(app)
+                    .delete('/api/comments/1000')
+                    .expect(404)
                     .then(({body}) => {
                         expect(body.msg).to.equal('Route not found')
                     })

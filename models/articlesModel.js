@@ -12,19 +12,18 @@ const fetchArticle = (article_id) => {
             if(article.length < 1) {
                 return Promise.reject({status: 404, msg : 'Route not found'})
              }
+             return article
         })
 };
 
 const updateArticle = (body) => {
-    console.log(body)
     return connection('articles')
         .where({article_id: body.article_id})
         .increment('votes', body.newVotes.inc_votes)
         .returning('*')
         .then(articles => {
-            console.log(articles)
-            if(isNaN(body.newVotes.inc_votes)) {
-                console.log('its not a number');
+            if(!body.newVotes.inc_votes) {
+                return Promise.reject({status : 400, msg : 'Bad request'})
             }
             if(articles.length < 1){
                 return Promise.reject(sendStatus(404).send({msg : 'Route not found'}))
@@ -39,8 +38,11 @@ const createArticle = (body) => {
         .into('comments')
         .returning('*')
         .then(comments => {
+            if (!body.author){
+                return Promise.reject({status:400, msg : 'Bad request'})
+            }
             if (body.article_id.length < 1){
-                return res.status(404).send({msg : 'Route not found'})
+                return Promise.reject({status: 404, msg : 'Route not found'})
             }
             else return comments
         })
@@ -53,6 +55,9 @@ const fetchCommentsByArticle = ({body, sortBy, orderBy}) => {
         .orderBy(sortBy || 'created_at', orderBy || "DESC")
         .returning('*')
             .then(comments => {
+                if(comments.length< 1) {
+                    return Promise.reject({status: 404, msg : 'Route not found'})
+                }
                 if (body.article_id.length < 1){
                     return Promise.reject({status: 404, msg : 'Route not found'})
                 }
@@ -81,6 +86,8 @@ const fetchArticles = (sortBy, orderBy, author, topic) => {
         });
 }
 
+
+
 module.exports = {
     fetchArticle,
     updateArticle,
@@ -88,13 +95,3 @@ module.exports = {
     fetchCommentsByArticle,
     fetchArticles
 }
-
-// console.log('---------------------------------');
-//                 console.log('about to check article');
-//                 const articleChecker = fetchArticle(body.article_id);
-//                 console.log('article checked found ');
-//                 console.log(articleChecker)
-//                 console.log('---------------------------------');
-//                 if(articleChecker.promise) {
-//                     console.log('IT HAS WORKED!!!!');
-//                 }
