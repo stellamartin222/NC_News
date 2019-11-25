@@ -17,10 +17,10 @@ exports.psqlErrors = (err, req, res, next) => {
     else next(err)
 }
 
-exports.internalServerError = (err, req, res, next) => {
-    res.status(500).send({ msg: 'Internal server error :(' })
+exports.send405 = (req, res) => {
+    res.status(405).send('method not found')
 }
 
-exports.send405 = (err, req, res) => {
-    res.status(405).send('method not found')
+exports.internalServerError = (err, req, res, next) => {
+    res.status(500).send({ msg: 'Internal server error :(' })
 }
