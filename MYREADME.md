@@ -7,5 +7,11 @@ It has been made with a PSQL database that I interacted with using Knex. Please 
 
 Bellow are the instructions to get the API up and running on your machine
 
-**Prerequisites
+# Prerequisites
+
+Put here what people will need to install to get the api running
+
+
+# Installing
+
 
