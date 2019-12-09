@@ -4,6 +4,7 @@ const usersRouter = require('./users.js')
 const articleRouter = require('./articles.js')
 const commentsRouter = require('./comments.js')
 
+//apiRouter.route('/').get(getAll).all()
 
 apiRouter.use('/topics', topicsRouter)
 apiRouter.use('/users', usersRouter)

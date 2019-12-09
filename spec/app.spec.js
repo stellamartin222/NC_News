@@ -209,7 +209,7 @@ describe('app', () => {
         });
     });
     describe('/api/comments', () => {
-        describe('PATCH', () => {
+        describe.only('PATCH', () => {
             it('GET 200, responds with updated comment when votes is incremented', () => {
                 return request(app)
                     .patch('/api/comments/1')
@@ -301,24 +301,24 @@ describe('app', () => {
                             expect(body.msg).to.equal('Bad request')
                         })
                 });
-                // it('will return 200 and an unedited article when given no send request', () => {
-                //     return request(app)
-                //         .patch('/api/articles/1')
-                //         .expect(200)
-                //         .then(({body}) => {
-                //             expect(body.article).to.be.an('object') 
-                //         expect(body.article.votes).to.equal(100)
-                //         expect(body.article).to.contain.keys(
-                //             'author', 
-                //             'title',
-                //             'article_id',
-                //             'body',
-                //             'topic',
-                //             'created_at',
-                //             'votes'
-                //         );
-                //         })
-                // })
+                it('will return 200 and an unedited article when given no send request', () => {
+                    return request(app)
+                        .patch('/api/articles/1')
+                        .expect(200)
+                        .then(({body}) => {
+                            expect(body.article).to.be.an('object') 
+                        expect(body.article.votes).to.equal(100)
+                        expect(body.article).to.contain.keys(
+                            'author', 
+                            'title',
+                            'article_id',
+                            'body',
+                            'topic',
+                            'created_at',
+                            'votes'
+                        );
+                        })
+                })
             });
             describe('POST comment', () => {
                 it('Error 400, missing information on body', () => {
@@ -424,19 +424,21 @@ describe('app', () => {
             });
         });
         describe('Comments', () => {
-            describe('PATCH', () => {
-                // it('will return with 200 when sent a body with no inc votes', () => {
-                //     return request(app)
-                //     .patch('/api/comments/1')
-                //     .expect(200)
-                //     .then(({body}) => {
-                //         expect(body.comment).to.be.an('object') 
-                //         expect(body.comment.votes).to.equal(16)
-                //     })
-                // });
+            describe.only('PATCH', () => {
+                it('will return with 200 when sent a body with no inc votes', () => {
+                    return request(app)
+                    .patch('/api/comments/1')
+                    .send({})
+                    .expect(200)
+                    .then(({body}) => {
+                        expect(body.comment).to.be.an('object') 
+                        expect(body.comment.votes).to.equal(16)
+                    })
+                });
                 it('will retrn with a 404 error when given an invalid comment id', () => {
                     return request(app)
                     .patch('/api/comments/1000')
+                    .send({})
                     .expect(404)
                     .then(({body}) => {
                         expect(body.msg).to.equal('Route not found')

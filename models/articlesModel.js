@@ -25,10 +25,14 @@ const updateArticle = (body) => {
             if(!body.newVotes.inc_votes) {
                 return Promise.reject({status : 400, msg : 'Bad request'})
             }
-            if(articles.length < 1){
+            else if(articles.length < 1){
                 return Promise.reject(sendStatus(404).send({msg : 'Route not found'}))
             }
-            return articles
+            else if(fetchArticle(body.article_id) && !body.newVotes.inc_votes){
+               
+            } else {
+                return articles
+            }
         })
 };
 

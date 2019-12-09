@@ -16,6 +16,7 @@ exports.getArticle = (req, res, next) => {
 
 exports.patchArticle = (req, res, next) => {
         const body = {article_id : req.params.article_id, newVotes : req.body}
+        //call get article here with a then
         updateArticle(body)
             .then(article =>{
                 res.status(200).send({'article' : article[0]})
