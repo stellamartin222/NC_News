@@ -4,7 +4,7 @@ const updateComment = (inc_votes, comment_id) => {
    console.log(inc_votes)
    return connection('comments')
    .where({'comments.comment_id': comment_id.comment_id})
-   .increment('votes', inc_votes.inc_votes)
+   .increment('votes', inc_votes.inc_votes || 0)
    .returning('*')
    .then(comment => {
       console.log(comment)

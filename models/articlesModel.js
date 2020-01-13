@@ -22,10 +22,7 @@ const updateArticle = (body) => {
         .increment('votes', body.newVotes.inc_votes)
         .returning('*')
         .then(articles => {
-            if(!body.newVotes.inc_votes) {
-                return Promise.reject({status : 400, msg : 'Bad request'})
-            }
-            else if(articles.length < 1){
+            if(articles.length < 1){
                 return Promise.reject(sendStatus(404).send({msg : 'Route not found'}))
             }
             else if(fetchArticle(body.article_id) && !body.newVotes.inc_votes){
@@ -90,12 +87,30 @@ const fetchArticles = (sortBy, orderBy, author, topic) => {
         });
 }
 
+const checkTopicExists = (topic) => {
+    if (topic) {
+      return connection
+        .select("slug")
+        .from("topics")
+        .where("slug", topic);
+    }
+  };
 
+  const checkAuthorExists = (author) => {
+    if (author) {
+      return connection
+        .select("username")
+        .from("users")
+        .where("username", author);
+    }
+  };
 
 module.exports = {
     fetchArticle,
     updateArticle,
     createArticle,
     fetchCommentsByArticle,
-    fetchArticles
+    fetchArticles,
+    checkTopicExists,
+    checkAuthorExists
 }

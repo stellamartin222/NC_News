@@ -3,7 +3,9 @@ const {
     updateArticle, 
     createArticle, 
     fetchCommentsByArticle, 
-    fetchArticles} = require('../models/articlesModel.js')
+    fetchArticles,
+    checkAuthorExists,
+    checkTopicExists} = require('../models/articlesModel.js')
 
 exports.getArticle = (req, res, next) => {
     const article_id = req.params.article_id
@@ -46,11 +48,14 @@ exports.getArticles = (req, res, next) => {
     const orderBy = req.query.order
     const author = req.query.author
     const topic = req.query.topic
-    fetchArticles(sortBy, orderBy, author, topic) 
-        .then(articles => {
-            if(articles.length === 0) {
-                res.status(404).send({msg: 'Route not found'})
-            }
-            res.status(200).send({'articles' : articles})
+    Promise.all([checkAuthorExists(author),checkTopicExists(topic)])
+    .then(
+        fetchArticles(sortBy, orderBy, author, topic) 
+    )
+    .then(articles => {
+        if(articles.length === 0) {
+            res.status(404).send({msg: 'Route not found'})
+        }
+        res.status(200).send({'articles' : articles})
     }).catch(next)
 };
