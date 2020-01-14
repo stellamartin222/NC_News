@@ -4,11 +4,13 @@ const usersRouter = require('./users.js')
 const articleRouter = require('./articles.js')
 const commentsRouter = require('./comments.js')
 const {send405} = require('../errorHander')
-const getAll = require('../controllers/apiController.js')
+const {getAll} = require('../controllers/apiController.js')
 
 
-//get "/" (.all)
-apiRouter.route("/").get(getAll).all(send405);
+apiRouter
+.route("/")
+.get(getAll)
+.all(send405);
 
 apiRouter.use('/topics', topicsRouter)
 apiRouter.use('/users', usersRouter)
