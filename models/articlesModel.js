@@ -51,15 +51,19 @@ const fetchCommentsByArticle = ({body, sortBy, orderBy}) => {
         .where({article_id: body.article_id})
         .orderBy(sortBy || 'created_at', orderBy || "DESC")
         .returning('*')
-            .then(comments => {
-                if(comments.length< 1) {
-                    return Promise.reject({status: 404, msg : 'Route not found'})
-                }
-                if (body.article_id.length < 1){
-                    return Promise.reject({status: 404, msg : 'Route not found'})
-                }
-                return comments
-            })
+        .then((comments) => {
+        return Promise.all([comments, checkArticleExists(body.article_id)]).then(
+            promise => {
+              if (promise[0].length === 0 && promise[1].length === 0) {
+                return Promise.reject({ status: 404, msg: "Route not found" });
+              } else if (promise[0].length === 0 && promise[1].length === 1) {
+                return comments;
+              } else {
+                return promise[0];
+              }
+            }
+          );
+        })
 }
 
 const fetchArticles = (sortBy, orderBy, author, topic) => {
@@ -79,20 +83,25 @@ const fetchArticles = (sortBy, orderBy, author, topic) => {
             }
         })
         .then(articles => {
-            return articles
+            return Promise.all([articles, checkTopicAndAuthorExists(topic, author)]).then(
+                promise => {
+                  if (promise[0].length === 0 && promise[1].length === 0) {
+                    return Promise.reject({ status: 404, msg: "Route not found" });
+                  } else {
+                    return promise[0];
+                  }
+                }
+              );
         });
 }
 
-const checkTopicExists = (topic) => {
+  const checkTopicAndAuthorExists = (topic, author) => {
     if (topic) {
       return connection
         .select("slug")
         .from("topics")
-        .where("slug", topic);
+        .where("slug", topic)
     }
-  };
-
-  const checkAuthorExists = (author) => {
     if (author) {
       return connection
         .select("username")
@@ -101,12 +110,17 @@ const checkTopicExists = (topic) => {
     }
   };
 
+  const checkArticleExists = (article_id) => {
+    return connection
+    .select("article_id")
+    .from("articles")
+    .where("article_id", article_id);
+  }
+
 module.exports = {
     fetchArticle,
     updateArticle,
     createArticle,
     fetchCommentsByArticle,
-    fetchArticles,
-    checkTopicExists,
-    checkAuthorExists
+    fetchArticles
 }

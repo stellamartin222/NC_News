@@ -46,10 +46,7 @@ exports.getArticles = (req, res, next) => {
     const orderBy = req.query.order
     const author = req.query.author
     const topic = req.query.topic
-    return Promise.all([checkAuthorExists(author),checkTopicExists(topic)])
-    .then((res) =>
-        fetchArticles(sortBy, orderBy, author, topic) 
-    )
+    return fetchArticles(sortBy, orderBy, author, topic) 
     .then(articles => {
         if(articles.length === 0) {
             res.status(404).send({msg: 'Route not found'})

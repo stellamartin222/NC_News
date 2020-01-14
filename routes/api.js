@@ -5,9 +5,12 @@ const articleRouter = require('./articles.js')
 const commentsRouter = require('./comments.js')
 
 
+//get "/" (.all)
+
 apiRouter.use('/topics', topicsRouter)
 apiRouter.use('/users', usersRouter)
 apiRouter.use('/articles', articleRouter)
 apiRouter.use('/comments', commentsRouter)
+
 
 module.exports = apiRouter;
