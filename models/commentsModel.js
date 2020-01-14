@@ -1,13 +1,11 @@
 const connection = require('../db/connection.js')
 
 const updateComment = (inc_votes, comment_id) => {
-   console.log(inc_votes)
    return connection('comments')
    .where({'comments.comment_id': comment_id.comment_id})
    .increment('votes', inc_votes.inc_votes || 0)
    .returning('*')
    .then(comment => {
-      console.log(comment)
       if(comment.length < 1){
          return Promise.reject({status :404, msg : 'Route not found'})
       }

@@ -209,7 +209,7 @@ describe('app', () => {
         });
     });
     describe('/api/comments', () => {
-        describe.only('PATCH', () => {
+        describe('PATCH', () => {
             it('GET 200, responds with updated comment when votes is incremented', () => {
                 return request(app)
                     .patch('/api/comments/1')
@@ -283,15 +283,6 @@ describe('app', () => {
                 })
             });
             describe('PATCH', () => {
-               it('Error 400, malformed body on empty input', () => {
-                    return request(app)
-                        .patch('/api/articles/1')
-                        .send({'egg': 'egg'})
-                        .expect(400)
-                        .then(({body}) => {
-                            expect(body.msg).to.equal('Bad request')
-                        })
-                });
                 it('Error 400, malformed body on invalid input', () => {
                     return request(app)
                         .patch('/api/articles/1')
@@ -424,7 +415,7 @@ describe('app', () => {
             });
         });
         describe('Comments', () => {
-            describe.only('PATCH', () => {
+            describe('PATCH', () => {
                 it('will return with 200 when sent a body with no inc votes', () => {
                     return request(app)
                     .patch('/api/comments/1')

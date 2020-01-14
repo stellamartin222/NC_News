@@ -1,4 +1,3 @@
-
 exports.customErrors = (err, req, res, next) => {
     if (err.msg){
         res.status(err.status).send({msg: err.msg})
@@ -15,6 +14,10 @@ exports.psqlErrors = (err, req, res, next) => {
         res.status(404).send({ msg: 'Route not found' })
     }
     else next(err)
+}
+
+exports.routeNotFound = (req, res, next) => {
+    res.status(404).send({msg :'Route not found'})
 }
 
 exports.send405 = (req, res) => {

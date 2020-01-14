@@ -17,11 +17,9 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.patchArticle = (req, res, next) => {
-        const body = {article_id : req.params.article_id, newVotes : req.body}
-        //call get article here with a then
-        updateArticle(body)
+        updateArticle(req)
             .then(article =>{
-                res.status(200).send({'article' : article[0]})
+               return res.status(200).send({'article' : article})
             }).catch(next)
 };
 
@@ -48,8 +46,8 @@ exports.getArticles = (req, res, next) => {
     const orderBy = req.query.order
     const author = req.query.author
     const topic = req.query.topic
-    Promise.all([checkAuthorExists(author),checkTopicExists(topic)])
-    .then(
+    return Promise.all([checkAuthorExists(author),checkTopicExists(topic)])
+    .then((res) =>
         fetchArticles(sortBy, orderBy, author, topic) 
     )
     .then(articles => {

@@ -16,20 +16,16 @@ const fetchArticle = (article_id) => {
         })
 };
 
-const updateArticle = (body) => {
+const updateArticle = (req) => {
+    const {article_id} = req.params
+    const {inc_votes = 0} = req.body
     return connection('articles')
-        .where({article_id: body.article_id})
-        .increment('votes', body.newVotes.inc_votes)
+        .select('*')
+        .where('article_id', article_id)
+        .increment('votes', inc_votes)
         .returning('*')
         .then(articles => {
-            if(articles.length < 1){
-                return Promise.reject(sendStatus(404).send({msg : 'Route not found'}))
-            }
-            else if(fetchArticle(body.article_id) && !body.newVotes.inc_votes){
-               
-            } else {
-                return articles
-            }
+                return articles[0]
         })
 };
 
