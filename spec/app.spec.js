@@ -241,19 +241,6 @@ describe('app', () => {
     });
 
 
-    // describe('existingArticle- article checker', () => {
-    //     it('will return a boolean value', () => {
-    //         const result = 1
-    //         expect(existingArticle(result)).to.be.an('boolean')
-    //     });
-    //     it('will return true when given a value that is an existing article', () => {
-    //         const expected = true
-    //         const result = 1
-    //         expect(existingArticle(result)).to.eql(expected)
-    //     })
-    // });
-
-
     describe('Error Handling', () => {
         it('Error 404, when inputting an invalid route', () => {
             return request(app)
